@@ -275,8 +275,8 @@ Resources:
             Statement:
               - Effect: "Allow"
                 Action: "athena:GetNamedQuery"
-                Resource: "*"
-                #Resource: !Sub "arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:*/*"
+                #Resource: "*"
+                Resource: !Sub "arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:*/*"
               #- Effect: "Allow"
               #  Action: "athena:athena:StartQueryExecution"
               #  Resource: !Sub "arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:*/*"
