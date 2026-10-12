@@ -1,0 +1,524 @@
+Resources:
+  #1. store log data in databricks
+  #MetricsTable2972A477:
+  #  Type: AWS::DynamoDB::Table
+  #  Properties:
+  #    KeySchema:
+  #      - AttributeName: query_id
+  #        KeyType: HASH
+  #      - AttributeName: query_date
+  #        KeyType: RANGE
+  #    AttributeDefinitions:
+  #      - AttributeName: query_id
+  #        AttributeType: S
+  #      - AttributeName: query_date
+  #        AttributeType: "N"
+  #    ProvisionedThroughput:
+  #      ReadCapacityUnits: 5
+  #      WriteCapacityUnits: 5
+  #  UpdateReplacePolicy: Retain
+  #  DeletionPolicy: Retain
+  #  Metadata:
+  #    aws:cdk:path: IronpondStack/MetricsTable/Resource
+  #CountryTable6393F43E:
+  #  Type: AWS::DynamoDB::Table
+  #  Properties:
+  #    KeySchema:
+  #      - AttributeName: aggregate
+  #        KeyType: HASH
+  #    AttributeDefinitions:
+  #      - AttributeName: aggregate
+  #        AttributeType: S
+  #    ProvisionedThroughput:
+  #      ReadCapacityUnits: 5
+  #      WriteCapacityUnits: 5
+  #  UpdateReplacePolicy: Retain
+  #  DeletionPolicy: Retain
+  #  Metadata:
+  #    aws:cdk:path: IronpondStack/CountryTable/Resource
+  LogBucketCC3B17E8:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: BucketOwnerFullControl
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - PUT
+              - GET
+            AllowedOrigins:
+              - ironpond.net
+      LifecycleConfiguration:
+        Rules:
+          - ExpirationInDays: 3
+            Prefix: .csv
+            Status: Enabled
+          - ExpirationInDays: 3
+            Prefix: .gz
+            Status: Enabled
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: IronpondStack/LogBucket/Resource
+  #LogBucketNotificationsF250B1AC:
+  #  Type: Custom::S3BucketNotifications
+  #  Properties:
+  #    ServiceToken:
+  #      Fn::GetAtt:
+  #        - BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691
+  #        - Arn
+  #    BucketName:
+  #      Ref: LogBucketCC3B17E8
+  #    NotificationConfiguration:
+  #      LambdaFunctionConfigurations:
+  #        - Events:
+  #            - s3:ObjectCreated:Put
+  #          Filter:
+  #            Key:
+  #              FilterRules:
+  #                - Name: suffix
+  #                  Value: .csv
+  #                - Name: prefix
+  #                  Value: results/
+  #          LambdaFunctionArn:
+  #            Fn::GetAtt:
+  #              - TriggerLambda2FDB819B
+  #              - Arn
+  #    Managed: true
+  #  DependsOn:
+  #    - LogBucketAllowBucketNotificationsToIronpondStackTriggerLambda67059596791C8571
+  #  Metadata:
+  #    aws:cdk:path: IronpondStack/LogBucket/Notifications/Resource
+  #LogBucketAllowBucketNotificationsToIronpondStackTriggerLambda67059596791C8571:
+  #  Type: AWS::Lambda::Permission
+  #  Properties:
+  #    Action: lambda:InvokeFunction
+  #    FunctionName:
+  #      Fn::GetAtt:
+  #        - TriggerLambda2FDB819B
+  #        - Arn
+  #    Principal: s3.amazonaws.com
+  #    SourceAccount: "531997442459"
+  #    SourceArn:
+  #      Fn::GetAtt:
+  #        - LogBucketCC3B17E8
+  #        - Arn
+  #  Metadata:
+  #    aws:cdk:path: IronpondStack/LogBucket/AllowBucketNotificationsToIronpondStackTriggerLambda67059596
+  IronPondCustomDomainCertificate160317C0:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: ironpond.net
+      DomainValidationOptions:
+        - DomainName: ironpond.net
+          HostedZoneId: Z06380132RLBS430KZ93O
+      Tags:
+        - Key: Name
+          Value: IronpondStack/IronPond/CustomDomainCertificate
+      ValidationMethod: DNS
+    Metadata:
+      aws:cdk:path: IronpondStack/IronPond/CustomDomainCertificate/Resource
+  IronPondLandingBucket32063821:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: IronpondStack/IronPond/LandingBucket/Resource
+  IronPondLandingBucketPolicyE3813E0D:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: IronPondLandingBucket32063821
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:GetBucket*
+              - s3:GetObject*
+              - s3:List*
+            Effect: Allow
+            Principal:
+              CanonicalUser:
+                Fn::GetAtt:
+                  - IronPondOriginAccessIdentityDDBFE084
+                  - S3CanonicalUserId
+            Resource:
+              - Fn::GetAtt:
+                  - IronPondLandingBucket32063821
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - IronPondLandingBucket32063821
+                        - Arn
+                    - /*
+          - Action: s3:GetObject
+            Effect: Allow
+            Principal:
+              CanonicalUser:
+                Fn::GetAtt:
+                  - IronPondOriginAccessIdentityDDBFE084
+                  - S3CanonicalUserId
+            Resource:
+              Fn::Join:
+                - ""
+                - - Fn::GetAtt:
+                      - IronPondLandingBucket32063821
+                      - Arn
+                  - /*
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: IronpondStack/IronPond/LandingBucket/Policy/Resource
+  IronPondOriginAccessIdentityDDBFE084:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: Allows CloudFront to reach the bucket
+    Metadata:
+      aws:cdk:path: IronpondStack/IronPond/OriginAccessIdentity/Resource
+  IronPondLandingDistributionA69862F3:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - ironpond.net
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+        DefaultCacheBehavior:
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+          Compress: true
+          TargetOriginId: IronpondStackIronPondLandingDistributionOrigin14A565CA0
+          ViewerProtocolPolicy: allow-all
+        DefaultRootObject: index.html
+        Enabled: true
+        HttpVersion: http2
+        IPV6Enabled: true
+        Logging:
+          Bucket:
+            Fn::GetAtt:
+              - LogBucketCC3B17E8
+              - RegionalDomainName
+        Origins:
+          - DomainName:
+              Fn::GetAtt:
+                - IronPondLandingBucket32063821
+                - RegionalDomainName
+            Id: IronpondStackIronPondLandingDistributionOrigin14A565CA0
+            S3OriginConfig:
+              OriginAccessIdentity:
+                Fn::Join:
+                  - ""
+                  - - origin-access-identity/cloudfront/
+                    - Ref: IronPondOriginAccessIdentityDDBFE084
+        ViewerCertificate:
+          AcmCertificateArn:
+            Ref: IronPondCustomDomainCertificate160317C0
+          MinimumProtocolVersion: TLSv1.2_2021
+          SslSupportMethod: sni-only
+    Metadata:
+      aws:cdk:path: IronpondStack/IronPond/LandingDistribution/Resource
+  IronPondwebsiterecord56FEA0F7:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: ironpond.net.
+      Type: A
+      AliasTarget:
+        DNSName:
+          Fn::GetAtt:
+            - IronPondLandingDistributionA69862F3
+            - DomainName
+        HostedZoneId:
+          Fn::FindInMap:
+            - AWSCloudFrontPartitionHostedZoneIdMap
+            - Ref: AWS::Partition
+            - zoneId
+      HostedZoneId: Z06380132RLBS430KZ93O
+    Metadata:
+      aws:cdk:path: IronpondStack/IronPond/website-record/Resource
+  #PandasLayer3ED48D49:
+  #  Type: AWS::Lambda::LayerVersion
+  #  Properties:
+  #    Content:
+  #      S3Bucket: us-east-1-python-layers
+  #      S3Key: pandas_python3.8.zip
+  #    CompatibleRuntimes:
+  #      - python3.8
+  #  Metadata:
+  #    aws:cdk:path: IronpondStack/PandasLayer/Resource
+  #TriggerLambdaServiceRole094F0859:
+  #  Type: AWS::IAM::Role
+  #  Properties:
+  #    AssumeRolePolicyDocument:
+  #      Statement:
+  #        - Action: sts:AssumeRole
+  #          Effect: Allow
+  #          Principal:
+  #            Service: lambda.amazonaws.com
+  #      Version: "2012-10-17"
+  #    ManagedPolicyArns:
+  #      - Fn::Join:
+  #          - ""
+  #          - - "arn:"
+  #            - Ref: AWS::Partition
+  #            - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+  #  Metadata:
+  #    aws:cdk:path: IronpondStack/TriggerLambda/ServiceRole/Resource
+  #TriggerLambdaServiceRoleDefaultPolicy1EB22F7F:
+  #  Type: AWS::IAM::Policy
+  #  Properties:
+  #    PolicyDocument:
+  #      Statement:
+  #        - Action:
+  #            - s3:Abort*
+  #            - s3:DeleteObject*
+  #            - s3:GetBucket*
+  #            - s3:GetObject*
+  #            - s3:List*
+  #            - s3:PutObject
+  #            - s3:PutObjectLegalHold
+  #            - s3:PutObjectRetention
+  #            - s3:PutObjectTagging
+  #            - s3:PutObjectVersionTagging
+  #          Effect: Allow
+  #          Resource:
+  #            - Fn::GetAtt:
+  #                - LogBucketCC3B17E8
+  #                - Arn
+  #            - Fn::Join:
+  #                - ""
+  #                - - Fn::GetAtt:
+  #                      - LogBucketCC3B17E8
+  #                      - Arn
+  #                  - /*
+  #        - Action:
+  #            - dynamodb:BatchGetItem
+  #            - dynamodb:BatchWriteItem
+  #            - dynamodb:ConditionCheckItem
+  #            - dynamodb:DeleteItem
+  #            - dynamodb:DescribeTable
+  #            - dynamodb:GetItem
+  #            - dynamodb:GetRecords
+  #            - dynamodb:GetShardIterator
+  #            - dynamodb:PutItem
+  #            - dynamodb:Query
+  #            - dynamodb:Scan
+  #            - dynamodb:UpdateItem
+  #          Effect: Allow
+  #          Resource:
+  #            - Fn::GetAtt:
+  #                - CountryTable6393F43E
+  #                - Arn
+  #            - Fn::GetAtt:
+  #                - MetricsTable2972A477
+  #                - Arn
+  #            - Ref: AWS::NoValue
+  #        - Action:
+  #            - s3:PutObjectAcl
+  #            - s3:PutObjectVersionAcl
+  #          Effect: Allow
+  #          Resource:
+  #            Fn::Join:
+  #              - ""
+  #              - - Fn::GetAtt:
+  #                    - LogBucketCC3B17E8
+  #                    - Arn
+  #                - /*
+  #      Version: "2012-10-17"
+  #    PolicyName: TriggerLambdaServiceRoleDefaultPolicy1EB22F7F
+  #    Roles:
+  #      - Ref: TriggerLambdaServiceRole094F0859
+  #  Metadata:
+  #    aws:cdk:path: IronpondStack/TriggerLambda/ServiceRole/DefaultPolicy/Resource
+  #TriggerLambda2FDB819B:
+  #  Type: AWS::Lambda::Function
+  #  Properties:
+  #    Code:
+  #      S3Bucket: cdk-hnb659fds-assets-531997442459-us-east-1
+  #      S3Key: 43d378b23ed3516a9b9769885126c25685f9b57644df8545fe2d331bcb77ef54.zip
+  #    Role:
+  #      Fn::GetAtt:
+  #        - TriggerLambdaServiceRole094F0859
+  #        - Arn
+  #    Environment:
+  #      Variables:
+  #        QUERY_TABLE:
+  #          Ref: MetricsTable2972A477
+  #        COUNTRY_TABLE:
+  #          Ref: CountryTable6393F43E
+  #    Handler: athena_trigger.handler
+  #    Layers:
+  #      - Ref: PandasLayer3ED48D49
+  #    Runtime: python3.8
+  #    Timeout: 60
+  #  DependsOn:
+  #    - TriggerLambdaServiceRoleDefaultPolicy1EB22F7F
+  #    - TriggerLambdaServiceRole094F0859
+  #  Metadata:
+  #    aws:cdk:path: IronpondStack/TriggerLambda/Resource
+  #    aws:asset:path: asset.43d378b23ed3516a9b9769885126c25685f9b57644df8545fe2d331bcb77ef54
+  #    aws:asset:is-bundled: false
+  #    aws:asset:property: Code
+  #BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC:
+  #  Type: AWS::IAM::Role
+  #  Properties:
+  #    AssumeRolePolicyDocument:
+  #      Statement:
+  #        - Action: sts:AssumeRole
+  #          Effect: Allow
+  #          Principal:
+  #            Service: lambda.amazonaws.com
+  #      Version: "2012-10-17"
+  #    ManagedPolicyArns:
+  #      - Fn::Join:
+  #          - ""
+  #          - - "arn:"
+  #            - Ref: AWS::Partition
+  #            - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+  #  Metadata:
+  #    aws:cdk:path: IronpondStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource
+  #BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36:
+  #  Type: AWS::IAM::Policy
+  #  Properties:
+  #    PolicyDocument:
+  #      Statement:
+  #        - Action: s3:PutBucketNotification
+  #          Effect: Allow
+  #          Resource: "*"
+  #      Version: "2012-10-17"
+  #    PolicyName: BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36
+  #    Roles:
+  #      - Ref: BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC
+  #  Metadata:
+  #    aws:cdk:path: IronpondStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource
+  #QueryLambdaServiceRoleDefaultPolicy863C88F5:
+  #  Type: AWS::IAM::Policy
+  #  Properties:
+  #    PolicyDocument:
+  #      Statement:
+  #        - Action:
+  #            - s3:Abort*
+  #            - s3:DeleteObject*
+  #            - s3:GetBucket*
+  #            - s3:GetObject*
+  #            - s3:List*
+  #            - s3:PutObject
+  #            - s3:PutObjectLegalHold
+  #            - s3:PutObjectRetention
+  #            - s3:PutObjectTagging
+  #            - s3:PutObjectVersionTagging
+  #          Effect: Allow
+  #          Resource:
+  #            - Fn::GetAtt:
+  #                - LogBucketCC3B17E8
+  #                - Arn
+  #            - Fn::Join:
+  #                - ""
+  #                - - Fn::GetAtt:
+  #                      - LogBucketCC3B17E8
+  #                      - Arn
+  #                  - /*
+  #      Version: "2012-10-17"
+  #    PolicyName: QueryLambdaServiceRoleDefaultPolicy863C88F5
+  #    Roles:
+  #      - Ref: QueryLambdaServiceRole0A274106
+  #  Metadata:
+  #    aws:cdk:path: IronpondStack/QueryLambda/ServiceRole/DefaultPolicy/Resource
+  #QueryLambda54767050:
+  #  Type: AWS::Lambda::Function
+  #  Properties:
+  #    Code:
+  #      S3Bucket: cdk-hnb659fds-assets-531997442459-us-east-1
+  #      S3Key: 43d378b23ed3516a9b9769885126c25685f9b57644df8545fe2d331bcb77ef54.zip
+  #    Role:
+  #      Fn::GetAtt:
+  #        - QueryLambdaServiceRole0A274106
+  #        - Arn
+  #    Environment:
+  #      Variables:
+  #        BUCKET:
+  #          Ref: LogBucketCC3B17E8
+  #    Handler: query.handler
+  #    Runtime: python3.8
+  #  DependsOn:
+  #    - QueryLambdaServiceRoleDefaultPolicy863C88F5
+  #    - QueryLambdaServiceRole0A274106
+  #  Metadata:
+  #    aws:cdk:path: IronpondStack/QueryLambda/Resource
+  #    aws:asset:path: asset.43d378b23ed3516a9b9769885126c25685f9b57644df8545fe2d331bcb77ef54
+  #    aws:asset:is-bundled: false
+  #    aws:asset:property: Code
+  #userpoolpolicy884146CA:
+  #  Type: AWS::IAM::Policy
+  #  Properties:
+  #    PolicyDocument:
+  #      Statement:
+  #        - Action:
+  #            - athena:GetNamedQuery
+  #            - athena:RunQuery
+  #           - athena:StartQueryExecution
+  #            - glue:GetTable
+  #          Effect: Allow
+  #          Resource: "*"
+  #      Version: "2012-10-17"
+  #    PolicyName: userpoolpolicy884146CA
+  #    Roles:
+  #      - Ref: QueryLambdaServiceRole0A274106
+  #  Metadata:
+  #    aws:cdk:path: IronpondStack/userpool-policy/Resource
+  #mylambdarule8DCCEE0D:
+  #  Type: AWS::Events::Rule
+  #  Properties:
+  #    Description: Description of the rule
+  #    ScheduleExpression: cron(0 1 * * ? *)
+  #    State: ENABLED
+  #    Targets:
+  #      - Arn:
+  #          Fn::GetAtt:
+  #            - QueryLambda54767050
+  #            - Arn
+  #        Id: Target0
+  #  Metadata:
+  #    aws:cdk:path: IronpondStack/my-lambda-rule/Resource
+  #mylambdaruleAllowEventRuleIronpondStackQueryLambda41ABA214A0AE8C3C:
+  #  Type: AWS::Lambda::Permission
+  #  Properties:
+  #    Action: lambda:InvokeFunction
+  #    FunctionName:
+  #      Fn::GetAtt:
+  #       - QueryLambda54767050
+  #        - Arn
+  #    Principal: events.amazonaws.com
+  #    SourceArn:
+  #      Fn::GetAtt:
+  #        - mylambdarule8DCCEE0D
+  #        - Arn
+  #  Metadata:
+  #    aws:cdk:path: IronpondStack/my-lambda-rule/AllowEventRuleIronpondStackQueryLambda41ABA214
+  #CDKMetadata:
+  #  Type: AWS::CDK::Metadata
+  #  Properties:
+  #    Analytics: v2:deflate64:H4sIAAAAAAAA/21R32vCMBD+W/YeM9lwe1aHMNhQ6tirXJOznLaJ5BKHlP7vu7QVHezp+3HfJZfLk3551dMH+OGJscdJTaVutxHMUYm1a+3FQeOtmF9Q1qiWe9eTTvGzbhfJHDFmc2QDbHxN5nKzRz2IBbB019CUFnQrmQ2GhpjJO/UBFwzfGHohpT96lZyJY+HKO2UwRNqTgYgNOKgwyKE3L4fvpORrn+w+eBd1uw5UkZsbg8zvFl2k2E+9zJlVzvybeCOOgcp0HeZedyr4FHEmy5kXaHywOTGwLcZOETS6Lfywyh5v2xpYXu0OmDGynmdQeJabWdrS2CbYdapA9imYwbrjn3A6katU3yx/WWUh/jrFU5IRnLeoD/x4fprqmfz9gYkmIcnjGtTFgL/GolMUFwIAAA==
+  #  Metadata:
+ #     aws:cdk:path: IronpondStack/CDKMetadata/Default
+Mappings:
+  AWSCloudFrontPartitionHostedZoneIdMap:
+    aws:
+      zoneId: Z2FDTNDATAQYW2
+    aws-cn:
+      zoneId: Z3RFFRIM2A3IF5
+#Outputs:
+#  MetricDomain:
+#    Value:
+#      Fn::GetAtt:
+#        - LogBucketCC3B17E8
+#        - DomainName
+#Parameters:
+#  BootstrapVersion:
+#    Type: AWS::SSM::Parameter::Value<String>
+#    Default: /cdk-bootstrap/hnb659fds/version
+#    Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
+
