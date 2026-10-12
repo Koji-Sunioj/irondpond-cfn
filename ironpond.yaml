@@ -271,10 +271,12 @@ Resources:
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"  
   TriggerAthenaLambda:
+    #DependsOn:
+    #  - AthenaPreviousDayQuery
     Type: AWS::Lambda::Function
     Properties:
       Handler: trigger_athena.handler
-      Role: !GetAtt TriggerAthena.Arn
+      Role: !GetAtt TriggerAthenaRole.Arn
       Runtime: python3.14
       Code:
         S3Bucket: !Ref FunctionBucket
