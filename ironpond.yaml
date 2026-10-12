@@ -165,6 +165,82 @@ Resources:
       HostedZoneId: Z06380132RLBS430KZ93O
     Metadata:
       aws:cdk:path: IronpondStack/IronPond/website-record/Resource
+  IronPondLogsDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: ironpond
+  IronPondLogsTable:      
+    DependsOn:
+      - IronPondLogsDatabase
+    Type: AWS::Glue::Table
+    Properties: 
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: ironpond
+      Name: cloudfront_logs
+      TableInput: EXTERNAL_TABLE
+      StorageDescriptor:
+        Columns:
+          - Name: date
+            Type: date
+          - Name: time
+            Type: string
+          - Name: location
+            Type: string
+          - Name: bytes
+            Type: bigint
+          - Name: request_ip
+            Type: string
+          - Name: method
+            Type: string
+          - Name: host
+            Type: string
+          - Name: uri
+            Type: string
+          - Name: status
+            Type: int
+          - Name: referrer
+            Type: string
+          - Name: user_agent
+            Type: string
+          - Name: query_string
+            Type: string
+          - Name: cookie 
+            Type: string
+          - Name: result_type
+            Type: string
+          - Name: request_id
+            Type: string
+          - Name: host_header
+            Type: string
+          - Name: request_protocol
+            Type: string 
+          - Name: request_bytes
+            Type: bigint 
+          - Name: time_taken
+            Type: float 
+          - Name: xforwarded_for
+            Type: string
+        Location: !Sub "s3://${LogBucketCC3B17E8}/"
+        InputFormat: org.apache.hadoop.mapred.TextInputFormat
+        OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            Parameters: 
+              field.delim: ","
+            SerializationLibrary: org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
+
+  #AthenaNamedQuery:
+  #  Type: AWS::Athena::NamedQuery
+  #  Properties:
+  #    Database: "swfmetadata"
+  #    Description: "A query that selects all aggregated data"
+  #    Name: "MostExpensiveWorkflow"
+  #    QueryString: >
+  #                  SELECT workflowname, AVG(activitytaskstarted) AS AverageWorkflow
+  #                  FROM swfmetadata
+  #                  WHERE year='17' AND GROUP BY workflowname
+  #                  ORDER BY AverageWorkflow DESC LIMIT 10
 Mappings:
   AWSCloudFrontPartitionHostedZoneIdMap:
     aws:
