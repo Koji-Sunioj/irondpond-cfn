@@ -268,13 +268,6 @@ Resources:
                 - "lambda.amazonaws.com"
             Action:
               - "sts:AssumeRole"
-          - Effect: "Allow"
-            Principal:
-              Service:
-                - !Sub arn:aws:athena:${AWS::AccountId}:{AWS::AccountId}:*/*
-            Action:
-              - "athena:GetNamedQuery"
-              - "athena:StartQueryExecution"
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"  
   TriggerAthenaLambda:
