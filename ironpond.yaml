@@ -223,7 +223,8 @@ Resources:
               Type: float 
             - Name: xforwarded_for
               Type: string
-        Location: !Sub "s3://${LogBucketCC3B17E8}/"
+        Location: ironpondstack-logbucketcc3b17e8-1t5bduk77ymw
+        #Location: !Sub s3://${LogBucketCC3B17E8}/
         InputFormat: org.apache.hadoop.mapred.TextInputFormat
         OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
   #AthenaNamedQuery:
