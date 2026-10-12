@@ -282,7 +282,7 @@ Resources:
                 Resource: !Sub "arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:*/*"
               - Effect: "Allow"
                 Action: "s3:*"
-                Resource: "*"
+                Resource: !Sub "arn:aws:s3:::{LogBucketCC3B17E8}" #"*"
               - Effect: "Allow"
                 Action: "glue:*"
                 Resource: "*"
