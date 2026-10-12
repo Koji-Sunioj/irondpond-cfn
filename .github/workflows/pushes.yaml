@@ -10,16 +10,24 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
   DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+  FUNCTION_BUCKET: ${{ secrets.FUNCTION_BUCKET }}
 jobs:
   deploy-ironpond:
     runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v6
       - run: |
+          VERSIONS=$(aws s3api list-object-versions --bucket $FUNCTION_BUCKET --region us-east-1 \
+            --prefix functions/ironpond_functions.zip --query "Versions")
+
+          VERSION_ID=$(echo $VERSIONS | jq -r '.[] | select(.IsLatest == true).VersionId')
+
           aws cloudformation deploy --stack-name IronpondStack \
             --template-file ironpond.yaml \
             --capabilities CAPABILITY_IAM \
             --region us-east-1 \
             --parameter-overrides \
               DataBricksHost=$DATABRICKS_HOST \
-              DataBricksToken=$DATABRICKS_TOKEN 
+              DataBricksToken=$DATABRICKS_TOKEN \
+              FunctionVersion=$VERSION_ID \
+              FunctionBucket=$FUNCTION_BUCKET \

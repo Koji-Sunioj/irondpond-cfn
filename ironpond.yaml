@@ -5,6 +5,12 @@ Parameters:
   DataBricksToken:
     Description: data bricks token for changes
     Type: String
+  FunctionVersion:
+    Description: version of function zip in s3
+    Type: String
+  FunctionBucket:
+    Description: bucket name of where functions zip lives
+    Type: String
 
 Resources:
   LogBucketCC3B17E8:
@@ -223,7 +229,6 @@ Resources:
               Type: float 
             - Name: xforwarded_for
               Type: string
-          #Location: ironpondstack-logbucketcc3b17e8-1t5bduk77ymw
           Location: !Sub "s3://${LogBucketCC3B17E8}/"
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
@@ -251,6 +256,34 @@ Resources:
                   referrer
                   from cloudfront_logs
                   where date =  current_date - interval '1' day;
+  TriggerAthenaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"  
+  TriggerAthenaLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: trigger_athena.handler
+      Role: !GetAtt TriggerAthena.Arn
+      Runtime: python3.14
+      Code:
+        S3Bucket: !Ref FunctionBucket
+        S3Key: functions/ironpond_functions.zip
+        S3ObjectVersion: !Ref FunctionVersion
+      Environment:
+        Variables:
+          ATHENA_QUERY_ID: !GetAtt AthenaPreviousDayQuery.NamedQueryId
+          LOGS_BUCKET: !Ref LogBucketCC3B17E8
 Mappings:
   AWSCloudFrontPartitionHostedZoneIdMap:
     aws:
