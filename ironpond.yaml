@@ -278,7 +278,7 @@ Resources:
                 #Resource: "*"
                 Resource: !Sub "arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:*/*"
               - Effect: "Allow"
-                Action: "athena:athena:StartQueryExecution"
+                Action: "athena:StartQueryExecution"
                 Resource: !Sub "arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:*/*"
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"  
