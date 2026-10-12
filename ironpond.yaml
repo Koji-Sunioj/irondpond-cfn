@@ -271,7 +271,7 @@ Resources:
           - Effect: "Allow"
             Principal:
               Service:
-                - !Sub "arn:aws:athena:us-east-1:{AWS::AccountId}:*/*"
+                - !Sub arn:aws:athena:${AWS::AccountId}:{AWS::AccountId}:*/*
             Action:
               - "athena:GetNamedQuery"
               - "athena:StartQueryExecution"
