@@ -283,7 +283,7 @@ Resources:
               - Effect: "Allow"
                 Action: "s3:*"
                 #Resource: "*"
-                Resource: !Sub "arn:${AWS::Partition}:s3:::${LoggingBucket}/*"
+                Resource: !Sub "arn:${AWS::Partition}:s3:::${LogBucketCC3B17E8}/*"
               - Effect: "Allow"
                 Action: "glue:*"
                 Resource: "*"
