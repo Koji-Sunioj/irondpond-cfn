@@ -179,7 +179,7 @@ Resources:
       CatalogId: !Ref AWS::AccountId
       DatabaseName: ironpond
       Name: cloudfront_logs
-      TableInput: EXTERNAL_TABLE
+      TableType: EXTERNAL_TABLE
       StorageDescriptor:
         Columns:
           - Name: date
