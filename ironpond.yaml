@@ -232,17 +232,25 @@ Resources:
               field.delim: "\t"
               skip.header.line.count: "2"
             SerializationLibrary: org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
-  #AthenaNamedQuery:
-  #  Type: AWS::Athena::NamedQuery
-  #  Properties:
-  #    Database: "swfmetadata"
-  #    Description: "A query that selects all aggregated data"
-  #    Name: "MostExpensiveWorkflow"
-  #    QueryString: >
-  #                  SELECT workflowname, AVG(activitytaskstarted) AS AverageWorkflow
-  #                  FROM swfmetadata
-  #                  WHERE year='17' AND GROUP BY workflowname
-  #                  ORDER BY AverageWorkflow DESC LIMIT 10
+  AthenaPreviousDayQuery:
+    Type: AWS::Athena::NamedQuery
+    Properties:
+      Database: ironpond
+      QueryString: >
+                  select
+                  date,
+                  time,
+                  location,
+                  request_ip,
+                  referrer,
+                  method,
+                  host,
+                  uri,
+                  status,
+                  user_agent,
+                  referrer
+                  from cloudfront_logs
+                  where date =  current_date - interval '1' day;
 Mappings:
   AWSCloudFrontPartitionHostedZoneIdMap:
     aws:
