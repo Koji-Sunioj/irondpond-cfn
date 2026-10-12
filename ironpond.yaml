@@ -286,6 +286,9 @@ Resources:
               - Effect: "Allow"
                 Action: "glue:*"
                 Resource: "*"
+              - Effect: "Allow"
+                Action: "glue:GetDatabase"
+                Resource: !Sub "arn:aws:glue:${AWS::Partition}:${AWS::AccountId}:catalog" #"arn:aws:glue:us-east-1:531997442459:catalog"
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"  
   TriggerAthenaLambda:
