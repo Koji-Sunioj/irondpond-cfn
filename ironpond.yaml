@@ -283,6 +283,9 @@ Resources:
               - Effect: "Allow"
                 Action: "s3:*"
                 Resource: "*"
+              - Effect: "Allow"
+                Action: "glue:*"
+                Resource: "*"
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"  
   TriggerAthenaLambda:
