@@ -229,7 +229,7 @@ Resources:
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
           SerdeInfo:
             Parameters:
-              field.delim: ","
+              field.delim: "\t"
             SerializationLibrary: org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
   #AthenaNamedQuery:
   #  Type: AWS::Athena::NamedQuery
