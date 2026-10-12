@@ -11,7 +11,7 @@ env:
   DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
   DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 jobs:
-  deploy-etl:
+  deploy-ironpond:
     runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v6

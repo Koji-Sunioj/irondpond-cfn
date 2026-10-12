@@ -230,6 +230,7 @@ Resources:
           SerdeInfo:
             Parameters:
               field.delim: "\t"
+              skip.header.line.count: "2"
             SerializationLibrary: org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
   #AthenaNamedQuery:
   #  Type: AWS::Athena::NamedQuery
