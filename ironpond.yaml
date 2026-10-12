@@ -280,6 +280,9 @@ Resources:
               - Effect: "Allow"
                 Action: "athena:StartQueryExecution"
                 Resource: !Sub "arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:*/*"
+              - Effect: "Allow"
+                Action: "s3:*"
+                Resource: "*"
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"  
   TriggerAthenaLambda:
