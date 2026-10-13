@@ -288,7 +288,6 @@ Resources:
                   - "s3:PutObject"
                   - "s3:GetObject"
                 Resource: !Sub "${LogBucketCC3B17E8.Arn}/*"
-                #Resource: !GetAtt LogBucketCC3B17E8.Arn
               - Effect: "Allow"
                 Action: "glue:Get*"
                 Resource:
