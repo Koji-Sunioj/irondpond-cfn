@@ -279,20 +279,15 @@ Resources:
                   - "athena:StartQueryExecution"
                 Resource: !Sub "arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:*/*"
               - Effect: "Allow"
-                Action: "s3:*"
-                Resource: "*"
+                Action: "s3:PutObject"
+                Resource: !GetAtt LogBucketCC3B17E8.Arn
+                #Resource: "*"
               - Effect: "Allow"
                 Action: "glue:Get*"
                 Resource:
                   - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/ironpond"
                   - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:catalog"
                   - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:table/ironpond/cloudfront_logs"
-              #- Effect: "Allow"
-              #  Action: "glue:GetDatabase"
-              #  Resource: !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:catalog" 
-              #- Effect: "Allow"
-              #  Action: "glue:GetDatabase"
-              #  Resource: !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/ironpond"
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"  
   TriggerAthenaLambda:
