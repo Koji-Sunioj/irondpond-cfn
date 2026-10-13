@@ -36,7 +36,7 @@ Resources:
             Status: Enabled
       NotificationConfiguration:
         EventBridgeConfiguration:
-          EventBridgeConfigured: true
+          EventBridgeConfigured: "true"
       #  LambdaConfiguration:
       #    Event: "s3:ObjectCreated:Put"
       #    Filter:
