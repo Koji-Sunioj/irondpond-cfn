@@ -255,7 +255,6 @@ Resources:
                   user_agent,
                   referrer
                   from awsdatacatalog.ironpond.cloudfront_logs
-                  #from cloudfront_logs
                   where date =  current_date - interval '1' day;
   TriggerAthenaRole:
     Type: AWS::IAM::Role
