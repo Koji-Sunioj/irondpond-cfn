@@ -285,9 +285,12 @@ Resources:
               - Effect: "Allow"
                 Action: "glue:GetDatabase"
                 Resource: !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:catalog" 
+              #- Effect: "Allow"
+              #  Action: "glue:GetDatabase"
+              #  Resource: !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/default"
               - Effect: "Allow"
                 Action: "glue:GetDatabase"
-                Resource: !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/default"
+                Resource: !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/ironpond"
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"  
   TriggerAthenaLambda:
