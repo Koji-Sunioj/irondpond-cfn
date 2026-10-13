@@ -393,7 +393,7 @@ Resources:
           - aws.s3
         detail:
           bucket:
-            - !GetAtt LogBucketCC3B17E8.Arn
+            - !Ref LogBucketCC3B17E8
           object:
             key: 
               - wildcard: "results/*.csv"
