@@ -310,6 +310,22 @@ Resources:
         Variables:
           ATHENA_QUERY_ID: !GetAtt AthenaPreviousDayQuery.NamedQueryId
           LOGS_BUCKET: !Ref LogBucketCC3B17E8
+  TriggerLambdaCRON:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Description of the rule
+      ScheduleExpression: cron(0 1 * * ? *)
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt TriggerAthenaLambda.Arn
+          Id: Cron1
+  TriggerLambdaCRONPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt TriggerAthenaLambda.Arn
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt TriggerLambdaCRON.Arn
 Mappings:
   AWSCloudFrontPartitionHostedZoneIdMap:
     aws:
