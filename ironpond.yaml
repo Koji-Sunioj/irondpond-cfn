@@ -283,8 +283,10 @@ Resources:
                 Action: "s3:*"
                 Resource: "*"
               - Effect: "Allow"
-                Action: "glue:*"
-                Resource: "*" 
+                Action: "glue:Get*"
+                Resource:
+                  - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/ironpond"
+                  - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:catalog"
               #- Effect: "Allow"
               #  Action: "glue:GetDatabase"
               #  Resource: !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:catalog" 
