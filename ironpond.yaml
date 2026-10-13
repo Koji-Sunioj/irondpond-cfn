@@ -304,11 +304,11 @@ Resources:
         Variables:
           ATHENA_QUERY_ID: !GetAtt AthenaPreviousDayQuery.NamedQueryId
           LOGS_BUCKET: !Ref LogBucketCC3B17E8
-  TriggerAthenaLambdaLog:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${TriggerAthenaLambda}"
-      RetentionInDays: 5
+  #TriggerAthenaLambdaLog:
+  #  Type: AWS::Logs::LogGroup
+  #  Properties:
+  #    LogGroupName: !Sub "/aws/lambda/${TriggerAthenaLambda}"
+  #    RetentionInDays: 5
 Mappings:
   AWSCloudFrontPartitionHostedZoneIdMap:
     aws:
