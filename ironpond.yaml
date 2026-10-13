@@ -254,7 +254,7 @@ Resources:
                   status,
                   user_agent,
                   xforwarded_for 
-                  from AwsDataCatalog.ironpond.cloudfront_logs
+                  from ironpond.cloudfront_logs
                   where date =  current_date - interval '1' day;
   TriggerAthenaRole:
     Type: AWS::IAM::Role
