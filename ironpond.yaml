@@ -280,10 +280,14 @@ Resources:
                 Resource: !Sub "arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:*/*"
               - Effect: "Allow"
                 Action: 
-                  - "s3:PutObject"
+                  - "s3:GetBucketLocation"
                   - "s3:ListBucket"
+                Resource: "arn:aws:s3:::*"
+              - Effect: "Allow"
+                Action: 
+                  - "s3:PutObject"
+                  - "s3:GetObject"
                 Resource: !GetAtt LogBucketCC3B17E8.Arn
-                #Resource: "*"
               - Effect: "Allow"
                 Action: "glue:Get*"
                 Resource:
