@@ -253,7 +253,7 @@ Resources:
                   uri,
                   status,
                   user_agent,
-                  referrer
+                  xforwarded_for 
                   from awsdatacatalog.ironpond.cloudfront_logs
                   where date =  current_date - interval '1' day;
   TriggerAthenaRole:
