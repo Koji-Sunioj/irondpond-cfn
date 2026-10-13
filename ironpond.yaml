@@ -356,6 +356,13 @@ Resources:
               - Effect: "Allow"
                 Action: "s3:GetObject" 
                 Resource: !Sub "${LogBucketCC3B17E8.Arn}/*"
+        - PolicyName: put_s3 
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: "s3:PutObject" 
+                Resource: !Sub "${IronPondLandingBucket32063821.Arn}/*"
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"  
   QueryLambda:
@@ -372,6 +379,7 @@ Resources:
         Variables:
           DATABRICKS_HOST: !Ref DataBricksHost
           DATABRICKS_TOKEN: !Ref DataBricksToken
+          FRONT_END_S3: !Ref IronPondLandingBucket32063821
       Layers:
         - !Ref DataBricksLambdaLayer
   QueryLambdaS3Trigger:
