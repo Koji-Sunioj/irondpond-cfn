@@ -324,7 +324,6 @@ Resources:
   TriggerLambdaCRON:
     Type: AWS::Events::Rule
     Properties:
-      Description: Description of the rule
       ScheduleExpression: cron(0 1 * * ? *)
       State: ENABLED
       Targets:
@@ -383,7 +382,31 @@ Resources:
           DATABRICKS_TOKEN: !Ref DataBricksToken
       Layers:
         - !Ref DataBricksLambdaLayer
-
+  QueryLambdaS3Trigger:
+    Type: AWS::Events::Rule
+    Properties:
+      State: ENABLED
+      EventPattern:
+        detail-type:
+          - "Object Created"
+        source: 
+          - aws.s3
+        detail:
+          bucket:
+            - !GetAtt LogBucketCC3B17E8.Arn
+          object:
+            key: 
+              - wildcard: "results/*.csv"
+      Targets:
+        - Arn: !GetAtt QueryLambda.Arn
+          Id: Query1
+  QueryLambdaS3TriggerPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt QueryLambda.Arn
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt QueryLambdaS3Trigger.Arn 
 Mappings:
   AWSCloudFrontPartitionHostedZoneIdMap:
     aws:
