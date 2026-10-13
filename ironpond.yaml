@@ -274,10 +274,9 @@ Resources:
             Version: "2012-10-17"
             Statement:
               - Effect: "Allow"
-                Action: "athena:GetNamedQuery"
-                Resource: !Sub "arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:*/*"
-              - Effect: "Allow"
-                Action: "athena:StartQueryExecution"
+                Action: 
+                  - "athena:GetNamedQuery"
+                  - "athena:StartQueryExecution"
                 Resource: !Sub "arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:*/*"
               - Effect: "Allow"
                 Action: "s3:*"
@@ -287,6 +286,7 @@ Resources:
                 Resource:
                   - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/ironpond"
                   - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:catalog"
+                  - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:table/ironpond/cloudfront_logs"
               #- Effect: "Allow"
               #  Action: "glue:GetDatabase"
               #  Resource: !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:catalog" 
