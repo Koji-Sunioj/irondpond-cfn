@@ -279,7 +279,9 @@ Resources:
                   - "athena:StartQueryExecution"
                 Resource: !Sub "arn:${AWS::Partition}:athena:${AWS::Region}:${AWS::AccountId}:*/*"
               - Effect: "Allow"
-                Action: "s3:PutObject"
+                Action: 
+                  - "s3:PutObject"
+                  - "s3:ListBucket"
                 Resource: !GetAtt LogBucketCC3B17E8.Arn
                 #Resource: "*"
               - Effect: "Allow"
