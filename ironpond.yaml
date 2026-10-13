@@ -254,7 +254,8 @@ Resources:
                   status,
                   user_agent,
                   referrer
-                  from cloudfront_logs
+                  from awsdatacatalog.ironpond.cloudfront_logs
+                  #from cloudfront_logs
                   where date =  current_date - interval '1' day;
   TriggerAthenaRole:
     Type: AWS::IAM::Role
@@ -285,9 +286,6 @@ Resources:
               - Effect: "Allow"
                 Action: "glue:GetDatabase"
                 Resource: !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:catalog" 
-              #- Effect: "Allow"
-              #  Action: "glue:GetDatabase"
-              #  Resource: !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/default"
               - Effect: "Allow"
                 Action: "glue:GetDatabase"
                 Resource: !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/ironpond"
