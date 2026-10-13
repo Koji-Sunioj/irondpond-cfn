@@ -34,9 +34,9 @@ Resources:
           - ExpirationInDays: 3
             Prefix: .gz
             Status: Enabled
-      NotificationConfiguration:
-        EventBridgeConfiguration:
-          EventBridgeConfigured: "true"
+      #NotificationConfiguration:
+      #  EventBridgeConfiguration:
+      #    EventBridgeConfigured: "true"
       #  LambdaConfiguration:
       #    Event: "s3:ObjectCreated:Put"
       #    Filter:
