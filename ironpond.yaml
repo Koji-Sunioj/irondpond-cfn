@@ -371,6 +371,7 @@ Resources:
       Handler: query_s3.handler
       Runtime: python3.14
       Role: !GetAtt QueryLambdaRole.Arn
+      Timeout: 60
       Code:
         S3Bucket: !Ref FunctionBucket
         S3Key: functions/ironpond_functions.zip
